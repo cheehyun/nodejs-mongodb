@@ -1,2 +1,1 @@
 nodejs-mongodb
-nodejs-mongodb

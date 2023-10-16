@@ -1,6 +1,10 @@
 const express = require('express');
 const app = express();
 
+app.use(express.static(__dirname + "/public"))
+app.set('view engine', 'ejs')
+
+
 const { MongoClient } = require('mongodb')
 
 let db
@@ -17,11 +21,6 @@ new MongoClient(url).connect().then((client)=>{
   console.log(err)
 })
 
-app.get('/buty', function(요청, 응답){
-    db.collection('post').insertOne({title : '어쩌구'})
-    //응답.send('미용 관련 페이지 입니다.');
-});
-
 app.get('/write', function(요청, 응답){
     응답.sendFile(__dirname + '/write.html');
 });
@@ -30,12 +29,18 @@ app.get('/write', function(요청, 응답){
 //중요
 app.get('/list', async(요청, 응답) => {
   let result = await db.collection('post').find().toArray()
-  console.log(result[0].title)
-  응답.send('db에 있는 게시물');
+  응답.render('list.ejs', { posts : result})
 });
-
+//서버 데이터를 ejs 파일에 넣으려면
+//1. ejs 파일로 데이터 전송
+//2. ejs 파일 안에 <%=데이터 이름%>
 
 
 app.get('/', function(요청, 응답){
     응답.sendFile(__dirname + '/index.html'); 
 }); 
+
+app.get('/time', async(요청, 응답) => {
+  let time = await new Date()
+  응답.render('time.ejs', { time : time})
+});

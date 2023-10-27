@@ -31,15 +31,6 @@ app.get('/write', (요청, 응답) => { //'/write'로 get, delete, post 요청�
 });
 
 
-//중요
-//서버 데이터를 ejs 파일에 넣으려면
-//1. ejs 파일로 데이터 전송
-//2. ejs 파일 안에 <%=데이터 이름%>
-app.get('/list', async(요청, 응답) => {
-  let result = await db.collection('post').find().toArray()
-  응답.render('list.ejs', { posts : result})
-});
-
 
 app.get('/', function(요청, 응답){
     응답.sendFile(__dirname + '/index.html'); 
@@ -67,9 +58,35 @@ app.post('/url', async(요청, 응답) => {
   }
 })
 
-app.get('/detail/:L', async(요청, 응답) => {
-  
-  // await db.collection('post').findOne({ _id : new ObjectId ('652b8b1a9f40a556a8fa75fa')})
-  응답.render('detail.ejs', {})
-  console.log(요청.params)
+
+
+//중요
+//서버 데이터를 ejs 파일에 넣으려면
+//1. ejs 파일로 데이터 전송
+//2. ejs 파일 안에 <%=데이터 이름%>
+app.get('/list', async(요청, 응답) => {
+  let result = await db.collection('post').find().toArray()
+  응답.render('list.ejs', { posts : result})
+});
+
+
+app.get('/detail/:id(\\w+)', async(요청, 응답) => {
+  try{
+    let result = await db.collection('post').findOne({ _id : new ObjectId (요청.params.id)})
+    응답.render('detail.ejs', {result : result})
+  }catch(e){
+    console.log(e)
+    응답.status(404).send('찾지못함')
+  }
+})
+
+
+app.get('/correction/:id(\\w+)', async(요청, 응답) => {
+  try{
+    let result = await db.collection('post').findOne({ _id : new ObjectId (요청.params.id)})
+    응답.render('correction.ejs', {result : result})
+  }catch(e){
+    console.log(e)
+    응답.status(e)
+  }
 })
